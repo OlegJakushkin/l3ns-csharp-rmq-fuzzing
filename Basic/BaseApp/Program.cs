@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
+using System.Threading;
 
 namespace BaseApp
 {
@@ -11,15 +12,22 @@ namespace BaseApp
         {
             Console.WriteLine("Hello World!");
 
-            NetworkInterface
+            var Ips = NetworkInterface
                 .GetAllNetworkInterfaces()
                 .Select(e=>e.GetIPProperties().UnicastAddresses
                     .FirstOrDefault(ip => ip.Address.AddressFamily == AddressFamily.InterNetwork)?.Address)
                 .Where(e=> e!= null)
-                .ToList()
-                .ForEach(e=>
+                .ToList();
+
+            var loopCount = 0;
+
+            while(true) {
+                Ips.ForEach(e =>
                     Console.WriteLine("IP Address {0}", e)
                 );
+                Console.WriteLine("iter: {0}, kill to quit", loopCount++);
+                Thread.Sleep(1000);
+            }
         }
     }
 }
